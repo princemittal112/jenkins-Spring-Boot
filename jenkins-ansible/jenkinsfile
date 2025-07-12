@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repo') {
+            steps {
+                git branch: 'main', url: 'https://github.com/princemittal112/spring-petclinic.git'
+            }
+        }
+
+        stage('Build JAR') {
+            steps {
+                sh 'chmod +x mvnw'
+                sh './mvnw clean package -DskipTests'
+            }
+        }
+
+        stage('Upload to S3') {
+            steps {
+                sh 'aws s3 cp target/spring-petclinic-3.5.0-SNAPSHOT.jar s3://jenkins-s3-prince/'
+            }
+        }
+
+        stage('Deploy to EC2 using Ansible') {
+            steps {
+                sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i inventory.ini deploy.yml'
+            }
+        }
+    }
+}

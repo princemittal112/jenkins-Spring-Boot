@@ -1,0 +1,37 @@
+---
+- name: Deploy Spring Boot JAR to EC2
+  hosts: appserver
+  become: yes
+  vars:
+    jar_file: spring-petclinic-3.5.0-SNAPSHOT.jar
+    remote_path: /home/ec2-user/
+
+  tasks:
+    - name: Install Java 17 (Amazon Corretto)
+      amazon.aws.aws_package:
+        name: java-17-amazon-corretto
+        state: present
+
+    - name: Install Nginx
+      package:
+        name: nginx
+        state: present
+
+    - name: Ensure Nginx is started and enabled
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Upload JAR to EC2
+      copy:
+        src: target/{{ jar_file }}
+        dest: "{{ remote_path }}"
+        mode: '0755'
+
+    - name: Kill running Spring Boot app (if any)
+      shell: pkill -f "{{ jar_file }}"
+      ignore_errors: yes
+
+    - name: Run Spring Boot app in background
+      shell: "nohup java -jar {{ remote_path }}{{ jar_file }} > /dev/null 2>&1 &"
