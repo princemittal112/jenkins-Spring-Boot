@@ -32,6 +32,8 @@ This project demonstrates a complete CI/CD pipeline using **Jenkins**, **Ansible
 4. **Ansible Playbook** pulls the JAR from S3 to EC2 and runs it.
 5. **Nginx** configured to proxy port 80 → 8081 (Spring Boot).
 
+![Screenshot 2025-07-11 at 12 13 31 PM](https://github.com/user-attachments/assets/a3557867-331a-4ddc-afd9-03c2a6122a6a)
+
 ---
 
 ## 🔐 Fixes & Enhancements
